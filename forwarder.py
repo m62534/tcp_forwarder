@@ -89,7 +89,7 @@ def forwarder():
                     print("Created connection to final dest")
 
                     ## Added to limbo dict
-                    limbo[client_fd], limbo[final_fd] = finalConn, clientConn
+                    limbo[client_fd], limbo[final_fd] = finalConn.fileno(), clientConn.fileno()
                     
                     ## testing
                     print(connections[client_fd])
@@ -99,9 +99,8 @@ def forwarder():
                 elif event & select.EPOLLIN:
                     # Forward data
                     print("reading data")
-                    buffer = connections[fd].recv(1024)
-                    print(buffer)
-                    connections[fd].send(buffer)
+                    #print(buffer)
+                    connections[limbo[fd]].send(connections[fd].recv(1024))
 
                     print(limbo)
 
