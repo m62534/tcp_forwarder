@@ -30,19 +30,15 @@ class configObject:
 
 
 def ProxyServer():
-        conns, forward_to = {}, {}
-    try:
-        serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        serverSock.bind((host, port))
-        serverSock.listen(1000)
-        serverSock.setblocking(0)
+    conns, forward_to = {}, {}
+    serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    serverSock.bind((host, port))
+    serverSock.listen(1000)
+    serverSock.setblocking(0)
 
-        epol = select.epoll()
-        epol.register(serverSock.fileno(), select.EPOLLIN)
-    except Exception as e:
-        logging.exception('')
-        serverSock = None
+    epol = select.epoll()
+    epol.register(serverSock.fileno(), select.EPOLLIN)
 
     try:
         while True:
