@@ -103,6 +103,8 @@ def forwarder():
                     print(buffer)
                     connections[fd].send(buffer)
 
+                    print(limbo)
+
                 elif event & select.EPOLLHUP:
                     # deregister
                     print("deregistering...")
