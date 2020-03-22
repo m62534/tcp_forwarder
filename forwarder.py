@@ -62,7 +62,6 @@ def forwarder():
         while True:
 
             events = epol.poll(1)
-
             for fd, event in events:
                 if fd == serverSock_fd:
                     print("new Connection")
@@ -97,6 +96,7 @@ def forwarder():
 
 
                 elif event & select.EPOLLIN:
+                    print(limbo)
                     # Get buffer
                     buffer = connections[fd].recv(1024)
                     if buffer:
