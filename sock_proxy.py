@@ -70,7 +70,7 @@ def ProxyServer():
                     to_sock = conns[to_fileno]
                     to_sock.send(data)
 
-                    print(limbo)
+                    print(forward_to)
                 elif event & select.EPOLLHUP:
                     if fileno in forward_to:
                         to_fileno = forward_to[fileno]
