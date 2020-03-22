@@ -52,7 +52,7 @@ def forwarder():
     # Instantiate
     connections, serverSock_fd = {}, serverSock.fileno()
 
-    # Instantiate final dict for final host fd tracking
+    ## Key is what forwarder references to find actual fd to get the socket
     limbo = {}
     #trackClient, trackFinal = {}, {}
 
@@ -98,11 +98,28 @@ def forwarder():
 
                 elif event & select.EPOLLIN:
                     # Forward data
-                    print("reading data")
-                    #print(buffer)
-                    connections[limbo[fd]].send(connections[fd].recv(1024))
+                    # Get buffer
+                    buffer = connections[fd].recv(1024)
+                    #f buffer:
+                        #print("2")
+                        ## Below finds true destination in limbo's set of fd keys.
+                        ##   once found, forwards buffer.
+                    if buffer:
+                        connections[limbo[fd]].send(buffer)
+                    # else:
+                    #     print("3")
+                    #     # deregister
+                    #     print("deregistering...")
+                    #     epol.unregister(limbo[fd])
+                    #     epol.unregister(fd)
 
-                    print(limbo)
+                        # # close
+                        # print("closing...")
+                        # connections[limbo[fd]].close()
+                        # connections[fd].close()
+                        
+                        # # Release from dicts
+                        # del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
 
                 elif event & select.EPOLLHUP:
                     # deregister
