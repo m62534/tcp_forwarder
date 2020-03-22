@@ -38,13 +38,9 @@ def get_open_fds():
 
     pid = os.getpid()
     procs = subprocess.check_output([ "lsof", '-w', '-Ff', "-p", str( pid ) ])
-
-    nprocs = len( 
-        filter( 
-            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
-            procs.split( b'\n' ) )
-        )
-    return nprocs
+    filtered = filter(lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(), procs.split( b'\n' ) ))
+    #nprocs = len()
+    return filtered
 
 def forwarder():
     print("Server host: ", serverHost)
