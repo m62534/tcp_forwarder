@@ -60,6 +60,10 @@ def ProxyServer():
                     conns[forward_sock.fileno()] = forward_sock
                     forward_to[conn.fileno()] = forward_sock.fileno()
                     forward_to[forward_sock.fileno()] = conn.fileno()
+
+                    print(conns[conn.fileno()])
+                    print(conns[forward_sock.fileno()])
+                    
                 elif event & select.EPOLLIN:
                     data = conns[fileno].recv(1024)
                     to_fileno = forward_to[fileno]
