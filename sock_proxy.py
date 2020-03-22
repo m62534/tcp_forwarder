@@ -1,17 +1,6 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
+#!/usr/bin/python3
 
-"""
-A socket proxy used to forward request-data from src address(host,port)
-to dest address(host,port), and forward response-data from dest address
-to src address.
-request:  src --> proxy --> dest
-response: dest --> proxy --> src
-
-author:     iyarkee@gmail.com
-version:    1.0 , 2013-01-02
-"""
-
+import json
 import socket
 import select
 import logging
