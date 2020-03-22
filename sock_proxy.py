@@ -63,12 +63,14 @@ def ProxyServer():
 
                     print(conns[conn.fileno()])
                     print(conns[forward_sock.fileno()])
-                    
+
                 elif event & select.EPOLLIN:
                     data = conns[fileno].recv(1024)
                     to_fileno = forward_to[fileno]
                     to_sock = conns[to_fileno]
                     to_sock.send(data)
+
+                    print(limbo)
                 elif event & select.EPOLLHUP:
                     if fileno in forward_to:
                         to_fileno = forward_to[fileno]
