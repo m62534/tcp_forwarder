@@ -37,6 +37,10 @@ def forwarder():
     
     # Create server socket
     serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    serverSock.bind((serverHost, serverPort))
+    serverSock.listen(5)
+    serverSock.setblocking(0) # non-blocking
 
     # Create epoll object
     epol = select.epoll()
@@ -44,13 +48,7 @@ def forwarder():
     # Associate with server socket file descriptor to the epoll object
     epol.register(serverSock.fileno(), select.EPOLLIN)
     print("server associated with epoll object")
-
     
-    serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    serverSock.bind((serverHost, serverPort))
-    serverSock.listen(5)
-    serverSock.setblocking(0) # non-blocking
-
     # Instantiate
     connections, serverSock_fd = {}, serverSock.fileno()
 
