@@ -27,6 +27,25 @@ class configObject:
             self.serverPort = data['server']['port']
             self.finalHost = data['final']['host']
             self.finalPort = data['final']['port']
+def get_open_fds():
+    '''
+    return the number of open file descriptors for current process
+
+    .. warning: will only work on UNIX-like os-es.
+    '''
+    import subprocess
+    import os
+
+    pid = os.getpid()
+    procs = subprocess.check_output( 
+        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+
+    nprocs = len( 
+        filter( 
+            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
+            procs.split( '\n' ) )
+        )
+    return nprocs
 
 def forwarder():
     print("Server host: ", serverHost)
@@ -65,6 +84,7 @@ def forwarder():
             for fd, event in events:
                 if fd == serverSock_fd:
                     print("new Connection")
+                    print(get_open_fds())
                     # initialize connection with client
                     clientConn, _ = serverSock.accept()
                     clientConn.setblocking(0)
@@ -96,25 +116,9 @@ def forwarder():
 
 
                 elif event & select.EPOLLIN:
-                    print(limbo)
-                    # Get buffer
+                    print(get_open_fds())
                     buffer = connections[fd].recv(1024)
-                    if buffer:
-                        connections[limbo[fd]].send(buffer)
-                    # else:
-                    #     print("3")
-                    #     # deregister
-                    #     print("deregistering...")
-                    #     epol.unregister(limbo[fd])
-                    #     epol.unregister(fd)
-
-                        # # close
-                        # print("closing...")
-                        # connections[limbo[fd]].close()
-                        # connections[fd].close()
-                        
-                        # # Release from dicts
-                        # del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                    connections[limbo[fd]].send(buffer)
 
                 elif event & select.EPOLLHUP:
                     # deregister
