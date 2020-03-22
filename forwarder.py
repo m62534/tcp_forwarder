@@ -101,20 +101,20 @@ def forwarder():
                     buffer = connections[fd].recv(1024)
                     if buffer:
                         connections[limbo[fd]].send(buffer)
-                    else:
-                        print("3")
-                        # deregister
-                        print("deregistering...")
-                        epol.unregister(limbo[fd])
-                        epol.unregister(fd)
+                    # else:
+                    #     print("3")
+                    #     # deregister
+                    #     print("deregistering...")
+                    #     epol.unregister(limbo[fd])
+                    #     epol.unregister(fd)
 
-                        # close
-                        print("closing...")
-                        connections[limbo[fd]].close()
-                        connections[fd].close()
+                        # # close
+                        # print("closing...")
+                        # connections[limbo[fd]].close()
+                        # connections[fd].close()
                         
-                        # Release from dicts
-                        del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                        # # Release from dicts
+                        # del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
 
                 elif event & select.EPOLLHUP:
                     # deregister
