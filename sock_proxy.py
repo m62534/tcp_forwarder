@@ -33,7 +33,7 @@ def ProxyServer():
     conns, forward_to = {}, {}
     serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    serverSock.bind((host, port))
+    serverSock.bind((serverHost, serverPort))
     serverSock.listen(1000)
     serverSock.setblocking(0)
 
