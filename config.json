@@ -1,10 +1,26 @@
-{
-    "server": {
-        "host": "0.0.0.0",
-        "port": 8005
+[
+    {
+        "proxyHost": "0.0.0.0",
+        "proxyPort": 8022,
+        "destHost": "0.0.0.0",
+        "destPort": 2200
     },
-    "final": {
-        "host": "172.16.171.131",
-        "port": 22
+    {
+        "proxyHost": "0.0.0.0",
+        "proxyPort": 8443,
+        "destHost": "0.0.0.0",
+        "destPort": 4430
+    },
+    {
+        "proxyHost": "0.0.0.0",
+        "proxyPort": 8005,
+        "destHost": "0.0.0.0",
+        "destPort": 8080
+    },
+    {
+        "proxyHost": "0.0.0.0",
+        "proxyPort": 8006,
+        "destHost": "0.0.0.0",
+        "destPort": 9990
     }
-}
+]
