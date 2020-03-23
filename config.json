@@ -2,19 +2,25 @@
     {
         "proxyHost": "0.0.0.0",
         "proxyPort": 8022,
-        "destHost": "172.16.171.131",
-        "destPort": 22
+        "destHost": "0.0.0.0",
+        "destPort": 2200
     },
     {
         "proxyHost": "0.0.0.0",
         "proxyPort": 8443,
-        "destHost": "172.16.171.131",
-        "destPort": 443
+        "destHost": "0.0.0.0",
+        "destPort": 4430
     },
     {
         "proxyHost": "0.0.0.0",
-        "proxyPort": 8080,
-        "destHost": "172.16.171.131",
-        "destPort": 80
+        "proxyPort": 8005,
+        "destHost": "0.0.0.0",
+        "destPort": 8080
+    },
+    {
+        "proxyHost": "0.0.0.0",
+        "proxyPort": 8006,
+        "destHost": "0.0.0.0",
+        "destPort": 9990
     }
 ]

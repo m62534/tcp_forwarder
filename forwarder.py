@@ -8,10 +8,12 @@ import subprocess
 import os
 import re
 import threading
+import sys
 
 class ThreadServer(threading.Thread):
-    def init(self, proxyHost, proxyPort, destHost, destPort, connections, clientConn, client_fd, epol, event, fd, 
-             final_fd, finalConn, limbo, serverSock, serverSock_fd):
+    lock = threading.Lock()
+    
+    def __init__(self, proxyHost, proxyPort, destHost, destPort, connections, clientConn, client_fd, epol, event, fd, final_fd, finalConn, limbo, serverSock, serverSock_fd):
         threading.Thread.__init__(self) 
         self.proxyHost      = proxyHost
         self.proxyPort      = proxyPort
@@ -28,7 +30,7 @@ class ThreadServer(threading.Thread):
         self.limbo          = limbo
         self.serverSock     = serverSock 
         self.serverSock_fd  = serverSock_fd
-
+        
     def get_open_fds(self):
     
         pid = os.getpid()
@@ -44,25 +46,37 @@ class ThreadServer(threading.Thread):
 
     def run(self): 
         while True : 
-            print("Server host: ", self.serverHost)
-            print("Server port ", self.serverPort)
-            print("final host: ", self.finalHost)
-            print("final port: ", self.finalPort)
-        
+            logging.debug('ThreadSever started...')
+            
+            logging.debug("  Proxy Host: {}".format(self.proxyHost))
+            logging.debug("  Proxy Port {}".format(self.proxyPort))
+            logging.debug("  Dest Host: {}".format(self.destHost))
+            logging.debug("  Dest Port: {}".format(self.destPort))
             
             # Create server socket
             serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            serverSock.bind((self.serverHost, self.serverPort))
-            serverSock.listen(5)
-            serverSock.setblocking(0) # non-blocking
-        
-            # Create epoll object
+            logging.debug("Attempting to bind self.proxyHost: {0} and self.proxyPort: {1}".format(self.proxyHost, self.proxyPort))
+            try:
+                serverSock.bind((self.proxyHost, self.proxyPort))
+                serverSock.listen(5)
+                serverSock.setblocking(0) # non-blocking
+            except Exception as e1:
+                # Create epoll object
+                logging.debug("FAILED registering bind listen block...")
+                sys.exit()
+            
             epol = select.epoll()
             
-            # Associate with server socket file descriptor to the epoll object
-            epol.register(serverSock.fileno(), select.EPOLLIN)
-            print("server associated with epoll object")
+            try:
+                # Associate with server socket file descriptor to the epoll object
+                epol.register(serverSock.fileno(), select.EPOLLIN)
+                logging.debug("server associated with epoll object")
+            except Exception as e1:
+                # Create epoll object
+                logging.debug("FAILED registering epol fd register...")
+                sys.exit()
+            
             
             # Instantiate
             connections, serverSock_fd = {}, serverSock.fileno()
@@ -75,12 +89,13 @@ class ThreadServer(threading.Thread):
             # Continue listening
             try:
                 while True:
-        
+                    logging.debug("polling...")
                     events = epol.poll(1)
         
                     for fd, event in events:
+                        logging.debug('event registered in thread')
                         if fd == serverSock_fd:
-                            print("new Connection")
+                            logging.debug("new Connection")
                             # initialize connection with client
                             clientConn, _ = serverSock.accept()
                             clientConn.setblocking(0)
@@ -89,18 +104,18 @@ class ThreadServer(threading.Thread):
                             # Register client conn to track
                             epol.register(client_fd, select.EPOLLIN) # Switch to reading
                             connections[client_fd] = clientConn
-                            print("Created connection for client")
+                            logging.debug("Created connection for client")
         
                             ## send connection request to FINAL host (Store state somewhere. possibly another dict)
                             finalConn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                            finalConn.connect((finalHost, finalPort))
+                            finalConn.connect((self.destHost, self.destPort))
                             finalConn.setblocking(0)
                             final_fd = finalConn.fileno()
                             
                             ## Register final host conn to track
                             epol.register(final_fd, select.EPOLLIN)
                             connections[final_fd] = finalConn
-                            print("Created connection to final dest")
+                            logging.debug("Created connection to final dest")
         
                             ## Added to limbo dict
                             limbo[client_fd], limbo[final_fd] = finalConn.fileno(), clientConn.fileno()
@@ -113,7 +128,7 @@ class ThreadServer(threading.Thread):
                         elif event & select.EPOLLIN:
                             buffer = connections[fd].recv(1024)
                             if buffer == b'':
-                                print("This fd needs to close", fd)
+                                logging.debug("This fd needs to close: {}".format(fd))
                                 connections[fd].close()
                                 epol.unregister(fd)
                                 del connections[fd], limbo[fd]
@@ -122,19 +137,20 @@ class ThreadServer(threading.Thread):
         
                         elif event & select.EPOLLHUP:
                             # deregister
-                            print("deregistering...")
+                            logging.debug("deregistering...")
                             #epol.unregister(limbo[fd])
                             epol.unregister(fd)
         
                             # close
-                            print("closing...")
+                            logging.debug("closing...")
                             #connections[limbo[fd]].close()
                             connections[fd].close()
                             
                             # Release from dicts
                             del connections[fd], limbo[fd]
                             #del connections[limbo[fd]], limbo[limbo[fd]]
-                
+            except Exception as e:
+                print(e)
             finally:
                 # Close main socket and epoll
                 epol.unregister(serverSock.fileno())
@@ -144,6 +160,7 @@ class ThreadServer(threading.Thread):
 if __name__ == "__main__":
     
     threads = [] 
+    logging.basicConfig(level=logging.DEBUG, format='%(relativeCreated)6d %(threadName)s %(message)s')
     
     connections     = threading.local()
     clientConn      = threading.local()
@@ -158,17 +175,18 @@ if __name__ == "__main__":
     serverSock_fd   = threading.local()
     
     # Read static variables from json
-    
-    with open('config.json', 'r') as f:
-        config_settings = json.load(f)
-    
-    for myConfig in config_settings:
+    try:
+        with open('config.json', 'r') as f:
+            config_settings = json.load(f)
         
-        thread = ThreadServer(myConfig['proxyHost'], myConfig['proxyPort'], myConfig['destHost'], myConfig['destPort'],
-                             connections, clientConn, client_fd, epol, event, fd, final_fd, finalConn, limbo, 
-                             serverSock, serverSock_fd)
-        threads += [thread]
-        thread.start()
-    
-    for x in threads: 
-        x.join()
+        for myConfig in config_settings:            
+            thread = ThreadServer(myConfig['proxyHost'], myConfig['proxyPort'], myConfig['destHost'], myConfig['destPort'], connections, clientConn, client_fd, epol, event, fd, final_fd, finalConn, limbo, serverSock, serverSock_fd)
+            thread.daemon = True
+            threads += [thread]
+            thread.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
+    finally:
+        for x in threads:
+            x.join()
+        sys.exit()
