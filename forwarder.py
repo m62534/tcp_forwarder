@@ -99,8 +99,10 @@ def forwarder():
                 elif event & select.EPOLLIN:
                     buffer = connections[fd].recv(1024)
                     if buffer == b'':
-                        connections[limbo[fd]].close()
-                        epol.unregister(limbo[fd])
+                        print("This fd needs to close", fd)
+                        connections[fd].close()
+                        epol.unregister(fd)
+                        del connections[fd], limbo[fd]
                     else:
                         connections[limbo[fd]].send(buffer)
 
