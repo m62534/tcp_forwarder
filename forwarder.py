@@ -83,7 +83,6 @@ class ThreadServer(threading.Thread):
         
             # Instantiate final dict for final host fd tracking
             limbo = {}
-            #trackClient, trackFinal = {}, {}
         
         
             # Continue listening
@@ -120,7 +119,7 @@ class ThreadServer(threading.Thread):
                             ## Added to limbo dict
                             limbo[client_fd], limbo[final_fd] = finalConn.fileno(), clientConn.fileno()
                             
-                            ## testing
+                            ## Show new connection objects
                             print(connections[client_fd])
                             print(connections[final_fd])
         
@@ -128,7 +127,7 @@ class ThreadServer(threading.Thread):
                         elif event & select.EPOLLIN:
                             buffer = connections[fd].recv(1024)
                             if buffer == b'':
-                                logging.debug("This fd needs to close: {}".format(fd))
+                                logging.debug("Closing this fd: {}".format(fd))
                                 connections[fd].close()
                                 epol.unregister(fd)
                                 del connections[fd], limbo[fd]
@@ -138,17 +137,16 @@ class ThreadServer(threading.Thread):
                         elif event & select.EPOLLHUP:
                             # deregister
                             logging.debug("deregistering...")
-                            #epol.unregister(limbo[fd])
                             epol.unregister(fd)
         
                             # close
                             logging.debug("closing...")
                             #connections[limbo[fd]].close()
                             connections[fd].close()
-                            
+
                             # Release from dicts
                             del connections[fd], limbo[fd]
-                            #del connections[limbo[fd]], limbo[limbo[fd]]
+
             except Exception as e:
                 print(e)
             finally:
