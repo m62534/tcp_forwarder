@@ -1,0 +1,10 @@
+## The below will create ESTABLISHED connections to the http port.
+## Below will need to be run inline on main shell. Enter the variable manually.
+
+proxyIp=
+proxyPort=
+
+for i in {1..10000};do
+    telnet 172.16.171.132 8005 &
+    sleep 0.5
+done
