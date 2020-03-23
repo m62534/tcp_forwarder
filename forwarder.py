@@ -109,16 +109,17 @@ def forwarder():
                 elif event & select.EPOLLHUP:
                     # deregister
                     print("deregistering...")
-                    epol.unregister(limbo[fd])
+                    #epol.unregister(limbo[fd])
                     epol.unregister(fd)
 
                     # close
                     print("closing...")
-                    connections[limbo[fd]].close()
+                    #connections[limbo[fd]].close()
                     connections[fd].close()
                     
                     # Release from dicts
-                    del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                    del connections[fd], limbo[fd]
+                    #del connections[limbo[fd]], limbo[limbo[fd]]
         
     finally:
         # Close main socket and epoll
