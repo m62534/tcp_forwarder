@@ -97,12 +97,12 @@ def forwarder():
 
 
                 elif event & select.EPOLLIN:
-                    # Forward data
-                    print("reading data")
-                    #print(buffer)
-                    connections[limbo[fd]].send(connections[fd].recv(1024))
-
-                    print(limbo)
+                    buffer = connections[fd].recv(1024)
+                    if buffer == b'':
+                        connections[limbo[fd]].close()
+                        epol.unregister(limbo[fd])
+                    else:
+                        connections[limbo[fd]].send(buffer)
 
                 elif event & select.EPOLLHUP:
                     # deregister
