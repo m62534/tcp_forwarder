@@ -30,7 +30,7 @@ def main():
 def sshRun():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host, port=port, username=username, password=password, timeout = 60)
+    ssh.connect(host, port=port, username=username, password=password, timeout = 60, allow_agent=False,look_for_keys=False)
     stdin, stdout, _ = ssh.exec_command(run)
     stdin.write('xy\n')
     stdin.flush()
