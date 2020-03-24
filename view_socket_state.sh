@@ -6,11 +6,11 @@ if [[ -z $1 ]];then
 	echo "Requires port argument"
 fi
 
-proxyIp=$(hostname -I)
+#proxyIp=$(hostname -I)
 proxyPort=$1
 
 while true;do
-	echo $(date) :: $(netstat -anp | grep "$proxyIp:$proxyPort" | grep -i ESTABLISHED | wc -l) "-" "ESTABLISHED"
-	echo $(date) :: $(netstat -anp | grep "$proxyIp:$proxyPort" | grep -i TIME_WAIT | wc -l) "-" "TIME_WAIT"
+	echo $(date) :: $(netstat -anp | grep ":$proxyPort" | grep -i ESTABLISHED | wc -l) "-" "ESTABLISHED"
+	echo $(date) :: $(netstat -anp | grep ":$proxyPort" | grep -i TIME_WAIT | wc -l) "-" "TIME_WAIT"
         sleep 1
 done
