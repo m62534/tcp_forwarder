@@ -22,7 +22,7 @@ def main():
         p = multiprocessing.Process(target=sshRun)
         jobs.append(p)
         p.start()
-        sleep(0.1)
+        sleep(0.05)
     
 
 def sshRun():
