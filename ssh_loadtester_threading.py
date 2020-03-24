@@ -9,7 +9,7 @@ def main():
     threads = []
     host, port = '172.16.171.132', 8022
     run = "echo hi; sleep 10"
-    for _ in range(100):
+    for _ in range(10):
         thread = threading.Thread(target=sshRun, args=(host, port, run))
         thread.start()
         threads.append(thread)
