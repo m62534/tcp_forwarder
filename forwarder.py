@@ -97,7 +97,16 @@ def forwarder():
 
                 elif event & select.EPOLLIN:
                     buffer = connections[fd].recv(1024)
-                    connections[limbo[fd]].send(buffer)
+                    if buffer == b'':
+                        logging.debug("Closing this fd: {}".format(fd))
+                        connections[fd].close()
+                        connections[limbo[fd]].close()
+                        epol.unregister(fd)
+                        epol.unregister(limbo[fd])
+                        del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                    else:
+                        if fd in limbo:
+                            connections[limbo[fd]].send(buffer)
 
                 elif event & select.EPOLLHUP:
                     # deregister
