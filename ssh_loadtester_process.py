@@ -4,6 +4,7 @@ import sys, os, string
 import paramiko
 import json
 import multiprocessing
+from time import sleep
 
 def main():
     global host, port, run, username, password
@@ -23,12 +24,13 @@ def main():
         p = multiprocessing.Process(target=sshRun)
         jobs.append(p)
         p.start()
+        sleep(0.1)
     
 
 def sshRun():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host, port=port, username=username, password=password)
+    ssh.connect(host, port=port, username=username, password=password, timeout = 60)
     stdin, stdout, _ = ssh.exec_command(run)
     stdin.write('xy\n')
     stdin.flush()
