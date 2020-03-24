@@ -1,0 +1,8 @@
+{
+    "host": "172.16.171.132",
+    "port": 8005,
+    "load": 1000,
+    "sleeptime": 100,
+    "password": "test",
+    "username": "test"
+}
