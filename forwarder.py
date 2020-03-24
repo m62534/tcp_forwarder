@@ -129,10 +129,13 @@ class ThreadServer(threading.Thread):
                             if buffer == b'':
                                 logging.debug("Closing this fd: {}".format(fd))
                                 connections[fd].close()
+                                connections[limbo[fd]].close()
                                 epol.unregister(fd)
-                                del connections[fd], limbo[fd]
+                                epol.unregister(limbo[fd])
+                                del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
                             else:
-                                connections[limbo[fd]].send(buffer)
+                                if fd in limbo:
+                                    connections[limbo[fd]].send(buffer)
         
                         elif event & select.EPOLLHUP:
                             # deregister

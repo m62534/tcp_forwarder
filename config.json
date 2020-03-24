@@ -2,7 +2,7 @@
     {
         "proxyHost": "0.0.0.0",
         "proxyPort": 8022,
-        "destHost": "192.168.0.1",
+        "destHost": "172.16.171.131",
         "destPort": 22
     },
     {
