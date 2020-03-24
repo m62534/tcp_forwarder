@@ -1,7 +1,7 @@
 {
     "host": "172.16.171.132",
     "port": 8022,
-    "load": 1000,
+    "load": 300,
     "sleeptime": 100,
     "password": "test",
     "username": "test"
