@@ -132,7 +132,7 @@ class ThreadServer(threading.Thread):
                                 connections[limbo[fd]].close()
                                 epol.unregister(fd)
                                 epol.unregister(limbo[fd])
-                                del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                                del connections[fd], connections[limbo[fd]], limbo[limbo[fd]], limbo[fd]
                             else:
                                 if fd in limbo:
                                     connections[limbo[fd]].send(buffer)
@@ -148,7 +148,7 @@ class ThreadServer(threading.Thread):
                             connections[fd].close()
 
                             # Release from dicts
-                            del connections[fd], limbo[fd]
+                            del connections[fd], connections[limbo[fd]], limbo[limbo[fd]], limbo[fd]
 
             except Exception as e:
                 print(e)
