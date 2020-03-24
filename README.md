@@ -60,4 +60,4 @@ There was more success in load testing the server with multiprocessing compared 
 
 5. TO RUN:  ./ssh_loadtester_process.py 
 
-5. TO SEE RESULTS AT ANY TIME:  ./view_socket_state.sh <PROXYPORT#>
+5. To see socket states, run the following in proxy host:  ./view_socket_state.sh <PROXYPORT#>
