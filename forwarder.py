@@ -103,7 +103,7 @@ def forwarder():
                         connections[limbo[fd]].close()
                         epol.unregister(fd)
                         epol.unregister(limbo[fd])
-                        del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                        del connections[fd], connections[limbo[fd]], limbo[limbo[fd]], limbo[fd]
                     else:
                         if fd in limbo:
                             connections[limbo[fd]].send(buffer)
@@ -120,7 +120,7 @@ def forwarder():
                     connections[fd].close()
                     
                     # Release from dicts
-                    del connections[fd], connections[limbo[fd]], limbo[fd], limbo[limbo[fd]]
+                    del connections[fd], connections[limbo[fd]], limbo[limbo[fd]], limbo[fd]
         
     finally:
         # Close main socket and epoll
