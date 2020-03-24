@@ -17,7 +17,7 @@ def main():
     sleeptime = loadtest_config['sleeptime']
 
     run = "echo hi; sleep " + str(sleeptime)
-    
+    run = "for i in {1.." + str(sleeptime) + "};do echo hi;sleep 1;done"
     jobs = []
     for i in range(load):
         p = multiprocessing.Process(target=sshRun)
