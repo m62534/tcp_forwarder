@@ -2,11 +2,6 @@
 # Overview: 
 forwarder.py is a python3 program which will parse config.json, and forward traffic to a destination host
 
-## DOCUMENTATION ##
-
-https://docs.google.com/document/d/1Dt3icjNUMr1x8V90hLS81ozQ9T5AuR04IqB0uuxX1Rw/edit#heading=h.r0kkhy17m56h
-
-
 ## USAGE
 1. Edit config.json
 2. Chmod 700 forwarder.py
